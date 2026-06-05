@@ -24,9 +24,6 @@ developer dashboard. The app must have read and write permissions for 'products'
 Shopify credentials include the store name and an app's client_id and secret.
 The store name can be found in the Shopify store's settings and the app's
 client_id and secret can be found in the app's settings in the dev dashboard.
-Note the app  
-
-TODO What permissions are necessary in the Shopify App?
 
 To run the program as a CLI, just clone the repo and call tool/main.py {pdf_path} 
 The -o is optional and lets you specify the output path of the resulting csv. You
