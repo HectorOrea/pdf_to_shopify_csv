@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moda Demo</title>
+    <style>
+      :root {
+        --ink: #1f2630;
+        --accent: #0a7cff;
+        --accent-soft: #e7f1ff;
+        --line: #d7dee8;
+        --paper: #fbfcfe;
+        --success: #157347;
+        --success-soft: #e9f6ef;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Avenir Next", "Segoe UI", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, #f0f7ff, transparent 35%),
+          linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      .shell {
+        width: min(720px, 100%);
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(215, 222, 232, 0.9);
+        border-radius: 24px;
+        box-shadow: 0 22px 60px rgba(29, 44, 71, 0.12);
+        overflow: hidden;
+      }
+
+      .hero {
+        padding: 28px 28px 18px;
+        background:
+          linear-gradient(135deg, rgba(10, 124, 255, 0.1), rgba(10, 124, 255, 0)),
+          var(--paper);
+        border-bottom: 1px solid var(--line);
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: clamp(2rem, 4vw, 2.75rem);
+        line-height: 1;
+      }
+
+      p {
+        margin: 0;
+        line-height: 1.5;
+      }
+
+      .panel {
+        padding: 28px;
+      }
+
+      .dropzone {
+        border: 2px dashed #9fbbdf;
+        border-radius: 22px;
+        padding: 38px 24px;
+        background: #f9fbff;
+        text-align: center;
+        transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+      }
+
+      .dropzone.dragover {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+        transform: scale(1.01);
+      }
+
+      .dropzone strong {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+      }
+
+      .actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 18px;
+        flex-wrap: wrap;
+      }
+
+      button,
+      .fake-button,
+      .download-button {
+        appearance: none;
+        border: 0;
+        border-radius: 999px;
+        background: var(--accent);
+        color: white;
+        font: inherit;
+        padding: 12px 18px;
+        cursor: pointer;
+        text-decoration: none;
+      }
+
+      button:disabled {
+        cursor: wait;
+        opacity: 0.6;
+      }
+
+      .fake-button {
+        background: white;
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+
+      .download-button {
+        display: none;
+        margin: 18px auto 0;
+        width: fit-content;
+        background: var(--success);
+      }
+
+      .download-button.ready {
+        display: block;
+      }
+
+      #file-name,
+      #status {
+        margin-top: 16px;
+        text-align: center;
+      }
+
+      #status {
+        min-height: 24px;
+        font-weight: 600;
+      }
+
+      #status.success {
+        color: var(--success);
+      }
+
+      .result {
+        display: none;
+        margin-top: 18px;
+        padding: 16px;
+        border: 1px solid #b9e2c9;
+        border-radius: 16px;
+        background: var(--success-soft);
+        text-align: center;
+      }
+
+      .result.ready {
+        display: block;
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <h1>Moda Demo</h1>
+        <p>Drag in a purchase order PDF, run the Moda pipeline, and download the Shopify CSV.</p>
+      </section>
+
+      <section class="panel">
+        <div id="dropzone" class="dropzone">
+          <strong>Drop a PDF here</strong>
+          <span>or choose one from your computer</span>
+
+          <div class="actions">
+            <label class="fake-button" for="pdf-input">Choose PDF</label>
+            <button id="run-button" type="button" disabled>Run Demo Flow</button>
+          </div>
+
+          <input id="pdf-input" type="file" accept=".pdf,application/pdf" />
+          <div id="file-name">No PDF selected yet.</div>
+          <div id="status"></div>
+          <div id="result" class="result">
+            <strong>Your CSV is ready.</strong>
+            <a id="download-link" class="download-button" href="#" download>Download here</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const dropzone = document.getElementById("dropzone");
+      const input = document.getElementById("pdf-input");
+      const runButton = document.getElementById("run-button");
+      const fileName = document.getElementById("file-name");
+      const status = document.getElementById("status");
+      const result = document.getElementById("result");
+      const downloadLink = document.getElementById("download-link");
+
+      let selectedFile = null;
+      let downloadUrl = null;
+
+      function clearDownload() {
+        if (downloadUrl) {
+          URL.revokeObjectURL(downloadUrl);
+          downloadUrl = null;
+        }
+        result.classList.remove("ready");
+        downloadLink.classList.remove("ready");
+        downloadLink.removeAttribute("href");
+        downloadLink.removeAttribute("download");
+      }
+
+      function setFile(file) {
+        clearDownload();
+        selectedFile = file;
+        fileName.textContent = file ? `Selected: ${file.name}` : "No PDF selected yet.";
+        runButton.disabled = !file;
+        status.textContent = "";
+        status.className = "";
+      }
+
+      async function runDemo() {
+        if (!selectedFile) {
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("pdf", selectedFile);
+
+        runButton.disabled = true;
+        clearDownload();
+        status.textContent = "Running Moda pipeline...";
+        status.className = "";
+
+        try {
+          const response = await fetch("/process", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (!response.ok) {
+            const body = await response.text();
+            throw new Error(body || "Upload failed.");
+          }
+
+          const blob = await response.blob();
+          const defaultName = `${selectedFile.name.replace(/\.pdf$/i, "") || "result"}_bulk-add.csv`;
+          const contentDisposition = response.headers.get("Content-Disposition") || "";
+          const match = contentDisposition.match(/filename="?([^"]+)"?/);
+          const filename = match ? match[1] : defaultName;
+
+          downloadUrl = URL.createObjectURL(blob);
+          downloadLink.href = downloadUrl;
+          downloadLink.download = filename;
+          downloadLink.classList.add("ready");
+          result.classList.add("ready");
+          status.textContent = "Success. Click Download here to save the CSV.";
+          status.className = "success";
+        } catch (error) {
+          status.textContent = `Something went wrong: ${error.message}`;
+        } finally {
+          runButton.disabled = !selectedFile;
+        }
+      }
+
+      dropzone.addEventListener("dragover", (event) => {
+        event.preventDefault();
+        dropzone.classList.add("dragover");
+      });
+
+      dropzone.addEventListener("dragleave", () => {
+        dropzone.classList.remove("dragover");
+      });
+
+      dropzone.addEventListener("drop", (event) => {
+        event.preventDefault();
+        dropzone.classList.remove("dragover");
+
+        const [file] = event.dataTransfer.files;
+        if (file && file.type === "application/pdf") {
+          setFile(file);
+        } else {
+          setFile(null);
+          status.textContent = "Please drop a PDF file.";
+        }
+      });
+
+      input.addEventListener("change", () => {
+        const [file] = input.files;
+        if (file) {
+          setFile(file);
+        }
+      });
+
+      runButton.addEventListener("click", runDemo);
+      window.addEventListener("beforeunload", clearDownload);
+    </script>
+  </body>
+</html>

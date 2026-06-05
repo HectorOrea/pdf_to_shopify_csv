@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.pyc
+
+# Debugging artifacts
+.mypy_cache/
+.ruff_cache/
+tool.egg-info/
+my_docs/
+example_pos/
+
+#Project Organization
+thing_to_do.txt
+
+# macOS
+.DS_Store
+
+# Secrets
+.env
+
+# Generated/demo artifacts
+product_images/
+demo_app/runs/
+*.csv
+debug.html
+selected_images.html
+candidate_images.html
+results*.html
+pptest.png
+debugging_aids/
+
+# Practices
+practice/
+ML_test/
