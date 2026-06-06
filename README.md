@@ -19,7 +19,6 @@ Here is the input and output for the demo
 
 ![Output CSV](assets/DemoOutput.png)
 
-TODO
 # Requirements
 The project requires search engine scraper credentials (we use SerpAPI), an openAI api key, proxy credentials (if no proxy desired set PROXY=None in webscrape.py), and Shopify credentials. 
 
