@@ -13,11 +13,11 @@ Here is the input and output for the demo
 
 ## Example Input
 
-![Input PDF](assets/example_input.png)
+![Input PDF](assets/DemoInput.png)
 
 ## Example Output
 
-![Output CSV](assets/example_output.png)
+![Output CSV](assets/DemoOutput.png)
 
 TODO
 # Requirements
