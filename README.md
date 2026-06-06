@@ -6,11 +6,18 @@ This dramatically speeds up the time for updating a website. Instead of manually
 searching for images and adding products one by one, just upload the pdf and import
 with the outputted csv.
 
-TODO
-Here is a demo GIF showing the entire workflow. 
+Here is a demo [video](https://youtu.be/HV1_b0v-0lc) showing the entire workflow. 
 
-TODO
-Here are the input and output for the above video
+
+Here is the input and output for the demo
+
+## Example Input
+
+![Input PDF](assets/example_input.png)
+
+## Example Output
+
+![Output CSV](assets/example_output.png)
 
 TODO
 # Requirements
