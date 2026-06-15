@@ -20,7 +20,6 @@ class CandidateImage(TypedDict):
     page_url: str # url of site image scraped from
     src_url: str # url that got scraped of the image
     alt_text: str | None
-    # confidence ?
 
 class WeakImage(CandidateImage):
     local_path: Path | None
@@ -50,9 +49,14 @@ class ProductPageAnalysis(TypedDict):
     candidate_images: List[CandidateImage]
     product_title: Optional[str]
     selected_image_indices: List[int] | None
+    selected_image_data: List["SelectedImageData"] | None
     error: str | None
     summary: str | None
     raw_AI_output: str | None
+
+class SelectedImageData(TypedDict):
+    candidate_index: int
+    confidence: float
 
 class Order(TypedDict):
     vendor: str

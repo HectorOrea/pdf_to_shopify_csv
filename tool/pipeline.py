@@ -31,6 +31,7 @@ def run_pipeline(pdf_path: Path, output_path: Path | str = "bulk-add.csv") -> Pa
     logger.info("finished adding images to table")
     
     create_visual_aid(enriched_table)
+    logger.info("finished creating visual debugging aid")
     uploaded_table = upload_enriched_table_images_to_shopify(enriched_table)
     logger.info("finished uploading all files")
     output_file = write_shopify_csv(uploaded_table, output_path)

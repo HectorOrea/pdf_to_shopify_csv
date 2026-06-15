@@ -5,6 +5,7 @@ from typing import Any, Literal, TypeAlias
 import tool.types as t
 
 DEBUGGING_AIDS_DIR = Path("debugging_aids")
+MAX_NUM_SELECTED_IMAGES = 10
 
 ImageEntry: TypeAlias = str | t.WeakImage | t.RobustImage
 OrderEntry: TypeAlias = t.EnrichedOrder | t.RobustOrder
@@ -28,7 +29,7 @@ def _status_for_entry(order: OrderEntry) -> Status:
         return "failed"
     if any("downloading all candidate images" in warning for warning in warnings):
         return "needs_review"
-    if len(images) > 10:
+    if len(images) > MAX_NUM_SELECTED_IMAGES:
         return "needs_review"
     return "success"
 
@@ -61,6 +62,11 @@ def _resolve_local_path(raw_path: str, html_dir: Path) -> Path:
     path = Path(raw_path).expanduser()
     if path.is_absolute():
         return path
+
+    cwd_path = path.resolve()
+    if cwd_path.exists():
+        return cwd_path
+
     return (html_dir / path).resolve()
 
 

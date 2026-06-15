@@ -87,6 +87,12 @@ def _make_candidate_images_visual_aid(
 
     page_analysis = _debug_payload(enriched)["page_analysis"]
     candidates = page_analysis["candidate_images"]
+    selected_image_data = page_analysis.get("selected_image_data") or []
+    confidence_by_candidate = {
+        item.get("candidate_index"): item.get("confidence")
+        for item in selected_image_data
+        if isinstance(item, dict)
+    }
 
     cards = []
     for candidate in candidates:
@@ -94,10 +100,12 @@ def _make_candidate_images_visual_aid(
         src_url = str(candidate.get("src_url") or "")
         alt_text = candidate.get("alt_text")
         page_url = str(candidate.get("page_url") or "")
+        confidence = confidence_by_candidate.get(idx)
 
         safe_src_url = escape(src_url, quote=True)
         safe_alt_text = escape("" if alt_text is None else str(alt_text))
         safe_page_url = escape(page_url, quote=True)
+        confidence_text = '<span class="muted">None</span>' if confidence is None else escape(str(confidence))
 
         if src_url:
             image_block = (
@@ -138,6 +146,10 @@ def _make_candidate_images_visual_aid(
                 <div class="meta-row">
                   <span class="meta-label">page_url</span>
                   <div class="meta-value">{page_url_block}</div>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-label">confidence</span>
+                  <div class="meta-value">{confidence_text}</div>
                 </div>
               </div>
             </section>
