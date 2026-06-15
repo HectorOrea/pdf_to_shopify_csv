@@ -25,10 +25,6 @@ import os
 
 logger = logging.getLogger(__name__)
 
-# Get proxy, using port 8000 automatially rotates from my list
-proxy_domain = os.environ.get("PROXY_DOMAIN")
-proxy_auth = os.environ.get("PROXY_AUTH")
-PROXY = f"http://{proxy_auth}@{proxy_domain}"
 
 HEADERS = {
     "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
@@ -46,6 +42,14 @@ HEADERS = {
     "upgrade-insecure-requests": "1",
     "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
 }
+
+def get_proxy() -> str | None:
+    proxy_domain = os.environ.get("PROXY_DOMAIN")
+    proxy_auth = os.environ.get("PROXY_AUTH")
+    if not proxy_domain or not proxy_auth:
+        return None
+    return f"http://{proxy_auth}@{proxy_domain}"
+
 
 def _normalize_image_url(raw_url: str, page_url: str) -> str | None:
     """
@@ -123,6 +127,7 @@ def _use_playwright_to_fetch_page_data(url: str, limit: int) -> t.ProductPageDat
     urls : List[str] = []
     alts : List[str | None] = []
     with sync_playwright() as p:
+        PROXY = get_proxy()
         browser = p.chromium.launch(proxy={"server": PROXY})
         page = browser.new_page()
         try:
@@ -198,6 +203,7 @@ def fetch_product_page_data(
     warnings = []
 
     try:
+        PROXY = get_proxy()
         response = session.get(page_url, headers=HEADERS, timeout=30, proxy=PROXY)
         response.raise_for_status()
         logger.info(f"Fetching {page_url}: {response.status_code}")

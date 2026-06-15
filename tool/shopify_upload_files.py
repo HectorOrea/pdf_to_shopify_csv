@@ -15,10 +15,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import cast
 import logging
-import os
 
 from curl_cffi import requests
 from curl_cffi.requests.exceptions import RequestException
+from tool.shopify_auth import get_shopify_auth
 import tool.types as t
 
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ShopifyFilesConfig:
     shop_domain: str = "test-moda-2.myshopify.com"
-    access_token: str = os.environ.get("SHOPIFY_TOKEN")
+    access_token: str = ""
     api_version: str = "2026-04"
     poll_interval_seconds: float = 2.0
     poll_timeout_seconds: float = 120.0
@@ -284,8 +284,7 @@ def upload_local_image_to_shopify(
     return _wait_for_file_url(file_id, image, config)
 
 def upload_enriched_table_images_to_shopify(
-    enriched_table: t.EnrichedOrderTable,
-    config: ShopifyFilesConfig,
+    enriched_table: t.EnrichedOrderTable
 ) -> t.EnrichedOrderTable:
     """
     Input
@@ -299,6 +298,11 @@ def upload_enriched_table_images_to_shopify(
         - A way of detecting when image src_urls are already public and don't 
         need to be uploaded to Shopify files
     """
+    auth = get_shopify_auth()
+    config = ShopifyFilesConfig(
+        shop_domain=auth.shop_domain,
+        access_token=auth.access_token,
+    )
     enriched_orders = enriched_table["orders"]
 
     # For each order (i.e. product), update with "public_image_urls" (returned)

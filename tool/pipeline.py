@@ -12,16 +12,12 @@ from tool.pdf_extraction import process_pdf
 from tool.enrichment import add_images_to_table
 
 from tool.shopify_formatting import write_shopify_csv
-from tool.shopify_upload_files import ShopifyFilesConfig, upload_enriched_table_images_to_shopify
+from tool.shopify_upload_files import upload_enriched_table_images_to_shopify
 
 import logging
 
 logger = logging.getLogger(__name__)
 
-"""
-    TO Add
-    - Add automatic Token Generation (if needed) here
-"""
 def run_pipeline(pdf_path: Path, output_path: Path | str = "bulk-add.csv") -> Path:
     if not pdf_path.exists():
         raise FileNotFoundError(f"File '{pdf_path}' not found.")
@@ -35,9 +31,7 @@ def run_pipeline(pdf_path: Path, output_path: Path | str = "bulk-add.csv") -> Pa
     logger.info("finished adding images to table")
     
     create_visual_aid(enriched_table)
-    #TODO: Add token generating flow, for now it's hard coded
-    files_config = ShopifyFilesConfig()
-    uploaded_table = upload_enriched_table_images_to_shopify(enriched_table, files_config)
+    uploaded_table = upload_enriched_table_images_to_shopify(enriched_table)
     logger.info("finished uploading all files")
     output_file = write_shopify_csv(uploaded_table, output_path)
     logger.info("finished writing output file")

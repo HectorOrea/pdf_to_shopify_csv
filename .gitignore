@@ -17,6 +17,7 @@ things_to_do.txt
 
 # Secrets
 .env
+tool/moda_shopify_token_cache.json
 
 # Generated/demo artifacts
 product_images/
