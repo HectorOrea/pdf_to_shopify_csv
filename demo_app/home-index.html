@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moda Tools Dashboard</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Avenir Next", "Segoe UI", sans-serif;
+        color: #1f2630;
+        background: #f5f8fc;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      main {
+        width: min(760px, 100%);
+      }
+
+      h1 {
+        margin: 0 0 8px;
+      }
+
+      p {
+        margin: 0 0 24px;
+        color: #5f6b7a;
+      }
+
+      .top-row {
+        align-items: start;
+        display: flex;
+        gap: 16px;
+        justify-content: space-between;
+      }
+
+      .logout-button {
+        border: 1px solid #d7dee8;
+        border-radius: 999px;
+        background: white;
+        color: #1f2630;
+        cursor: pointer;
+        font: inherit;
+        padding: 8px 12px;
+      }
+
+      .tool-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+      }
+
+      .tool-card {
+        display: block;
+        padding: 20px;
+        border: 1px solid #d7dee8;
+        border-radius: 16px;
+        background: white;
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .tool-card strong {
+        display: block;
+        margin-bottom: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="top-row">
+        <div>
+          <h1>Moda Tools</h1>
+          <p>Choose a workflow.</p>
+        </div>
+        <form method="post" action="/logout">
+          <button class="logout-button" type="submit">Log out</button>
+        </form>
+      </div>
+
+      <div class="tool-grid">
+        <a class="tool-card" href="/shopify_tool">
+          <strong>Shopify PDF to CSV</strong>
+          Upload a purchase order PDF and download the Shopify CSV.
+        </a>
+
+        <a class="tool-card" href="/sum_tool">
+          <strong>Sum Tool</strong>
+          Test a tiny frontend-to-backend workflow.
+        </a>
+      </div>
+    </main>
+  </body>
+</html>

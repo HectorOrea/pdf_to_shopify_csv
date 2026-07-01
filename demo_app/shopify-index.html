@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+  <!--  The head contains straight metadata about how the page will look    -->
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Moda Demo</title>
+    <!--  This is all CSS stuff, a language used to define styling -->
     <style>
+      /* The root defines reusable color vars */
       :root {
         --ink: #1f2630;
         --accent: #0a7cff;
@@ -15,30 +18,33 @@
         --success-soft: #e9f6ef;
       }
 
+      /* All elms have padding + border + elm size to the given width */
       * {
         box-sizing: border-box;
       }
 
       body {
         margin: 0;
-        min-height: 100vh;
+        min-height: 100vh; /* 100% of vieport-height */
         font-family: "Avenir Next", "Segoe UI", sans-serif;
         color: var(--ink);
         background:
           radial-gradient(circle at top left, #f0f7ff, transparent 35%),
           linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
         display: grid;
-        place-items: center;
+        place-items: center; /* Refers to the direct children of body in the html */
         padding: 24px;
       }
 
+      /* The main container my stuff is in is called shell */
+      /* These styling configs apply to it */
       .shell {
         width: min(720px, 100%);
         background: rgba(255, 255, 255, 0.9);
         border: 1px solid rgba(215, 222, 232, 0.9);
         border-radius: 24px;
         box-shadow: 0 22px 60px rgba(29, 44, 71, 0.12);
-        overflow: hidden;
+        overflow: hidden; /* Clip any child element that extends past these borders */
       }
 
       .hero {
@@ -67,12 +73,13 @@
       .dropzone {
         border: 2px dashed #9fbbdf;
         border-radius: 22px;
-        padding: 38px 24px;
+        padding: 28px 24px;
         background: #f9fbff;
         text-align: center;
         transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
       }
 
+      /* dropzone changes when a file gets dragged over it */
       .dropzone.dragover {
         border-color: var(--accent);
         background: var(--accent-soft);
@@ -86,7 +93,7 @@
       }
 
       .actions {
-        display: flex;
+        display: flex; /* List them out in a row */
         gap: 12px;
         justify-content: center;
         margin-top: 18px;
@@ -129,6 +136,7 @@
         display: block;
       }
 
+      /*  the # means reference id's */
       #file-name,
       #status {
         margin-top: 16px;
@@ -140,12 +148,13 @@
         font-weight: 600;
       }
 
+      /* so this only applied to id=status AND class=success */
       #status.success {
         color: var(--success);
       }
 
       .result {
-        display: none;
+        display: none; /* this is why the result is inti hidden */
         margin-top: 18px;
         padding: 16px;
         border: 1px solid #b9e2c9;
@@ -154,6 +163,7 @@
         text-align: center;
       }
 
+      
       .result.ready {
         display: block;
       }
@@ -163,35 +173,47 @@
       }
     </style>
   </head>
+
+  <!-- Note this body defines how the elements interact with each other,
+   and here also the text -->
   <body>
     <main class="shell">
+      <!-- hero is a common web design word for top section -->
       <section class="hero">
+        <p><a href="/dashboard">Back to dashboard</a></p>
         <h1>Moda Demo</h1>
         <p>Drag in a purchase order PDF, run the Moda pipeline, and download the Shopify CSV.</p>
       </section>
 
       <section class="panel">
+        <!-- class is used by css, id is used by javascript -->
         <div id="dropzone" class="dropzone">
           <strong>Drop a PDF here</strong>
           <span>or choose one from your computer</span>
 
-          <div class="actions">
-            <label class="fake-button" for="pdf-input">Choose PDF</label>
+          <div class="actions"> <!-- This is an element with defined style -->
+            <label class="fake-button" for="pdf-input">Choose PDF</label> <!-- html convention that clicking a label with for="x" triggers selecting input with id="x"-->
             <button id="run-button" type="button" disabled>Run Demo Flow</button>
           </div>
 
+          <!-- Here are a bunch of placeholder elements to get updates later-->
+          <!-- Frontend checks are for convenience, backend is for enforcement -->
           <input id="pdf-input" type="file" accept=".pdf,application/pdf" />
-          <div id="file-name">No PDF selected yet.</div>
-          <div id="status"></div>
+          <div id="file-name">No PDF selected yet.</div> <!-- Gets updated later-->
+          <div id="status"></div> 
           <div id="result" class="result">
             <strong>Your CSV is ready.</strong>
             <a id="download-link" class="download-button" href="#" download>Download here</a>
+            <!-- # is placeholder, gets updated later. elms 'a' are links, this one made to appear like a button-->
           </div>
         </div>
       </section>
     </main>
 
+    <!-- Everything in the script is JavaScript and makes the page interactive -->
     <script>
+
+      // Here we are defining element vars by referencing the id used in the html
       const dropzone = document.getElementById("dropzone");
       const input = document.getElementById("pdf-input");
       const runButton = document.getElementById("run-button");
@@ -200,9 +222,11 @@
       const result = document.getElementById("result");
       const downloadLink = document.getElementById("download-link");
 
-      let selectedFile = null;
+      let selectedFile = null; // let means we can change it later, const means we can't
       let downloadUrl = null;
 
+      // Removes download url, releases it from browser memory, and removes
+      // ready attribute to cause certain elements to hide
       function clearDownload() {
         if (downloadUrl) {
           URL.revokeObjectURL(downloadUrl);
@@ -214,22 +238,25 @@
         downloadLink.removeAttribute("download");
       }
 
+      // Called when file picked or dropped
       function setFile(file) {
         clearDownload();
         selectedFile = file;
-        fileName.textContent = file ? `Selected: ${file.name}` : "No PDF selected yet.";
+        fileName.textContent = file ? `Selected: ${file.name}` : "No PDF selected yet."; // ternary condition
         runButton.disabled = !file;
         status.textContent = "";
         status.className = "";
       }
 
+      // async keyword lets me use await within it
+      // Without await, I get returned a 'promise' not the actual response
       async function runDemo() {
         if (!selectedFile) {
           return;
         }
 
-        const formData = new FormData();
-        formData.append("pdf", selectedFile);
+        const formData = new FormData(); // FormData is browser provided object, useful for file uploads
+        formData.append("pdf", selectedFile); // the name "pdf" matters here since my backend expects a field named "pdf"
 
         runButton.disabled = true;
         clearDownload();
@@ -237,9 +264,11 @@
         status.className = "";
 
         try {
+          // this is where I send the post request to the same url or server but at the path /process
+          // this path is important since my backend responds to requests sent exactly there
           const response = await fetch("/process", {
             method: "POST",
-            body: formData,
+            body: formData, // this is the object 
           });
 
           if (!response.ok) {
@@ -253,7 +282,7 @@
           const match = contentDisposition.match(/filename="?([^"]+)"?/);
           const filename = match ? match[1] : defaultName;
 
-          downloadUrl = URL.createObjectURL(blob);
+          downloadUrl = URL.createObjectURL(blob); // creates temp pointer url for browser to download this object
           downloadLink.href = downloadUrl;
           downloadLink.download = filename;
           downloadLink.classList.add("ready");
@@ -277,10 +306,10 @@
       });
 
       dropzone.addEventListener("drop", (event) => {
-        event.preventDefault();
+        event.preventDefault(); // browser default usually just to open
         dropzone.classList.remove("dragover");
 
-        const [file] = event.dataTransfer.files;
+        const [file] = event.dataTransfer.files; // [file] means first item of the  list and call it file
         if (file && file.type === "application/pdf") {
           setFile(file);
         } else {

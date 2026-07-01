@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moda Sum Tool</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Avenir Next", "Segoe UI", sans-serif;
+        color: #1f2630;
+        background: #f5f8fc;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      main {
+        width: min(520px, 100%);
+        padding: 24px;
+        border: 1px solid #d7dee8;
+        border-radius: 16px;
+        background: white;
+      }
+
+      a {
+        color: #0a7cff;
+      }
+
+      label {
+        display: block;
+        margin-top: 14px;
+        font-weight: 600;
+      }
+
+      input {
+        width: 100%;
+        margin-top: 6px;
+        padding: 10px;
+        border: 1px solid #d7dee8;
+        border-radius: 8px;
+        font: inherit;
+      }
+
+      button {
+        margin-top: 18px;
+        padding: 10px 14px;
+        border: 0;
+        border-radius: 999px;
+        background: #0a7cff;
+        color: white;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      #result {
+        margin-top: 18px;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <a href="/dashboard">Back to dashboard</a>
+      <h1>Sum Tool</h1>
+
+      <label for="a-input">First number</label>
+      <input id="a-input" type="number" step="any" />
+
+      <label for="b-input">Second number</label>
+      <input id="b-input" type="number" step="any" />
+
+      <button id="sum-button" type="button">Compute Sum</button>
+      <div id="result"></div>
+
+      <script>
+        const aInput = document.getElementById("a-input");
+        const bInput = document.getElementById("b-input");
+        const sumButton = document.getElementById("sum-button");
+        const result = document.getElementById("result");
+
+        async function computeSum() {
+          result.textContent = "Computing...";
+
+          const response = await fetch("/sum", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              a: Number(aInput.value),
+              b: Number(bInput.value),
+            }),
+          });
+
+          if (!response.ok) {
+            result.textContent = "Something went wrong.";
+            return;
+          }
+
+          const data = await response.json();
+          result.textContent = `Sum: ${data.sum}`;
+        }
+
+        sumButton.addEventListener("click", computeSum);
+      </script>
+    </main>
+  </body>
+</html>

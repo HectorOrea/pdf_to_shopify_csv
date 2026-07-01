@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moda Login</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Avenir Next", "Segoe UI", sans-serif;
+        color: #1f2630;
+        background: #f5f8fc;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      main {
+        width: min(420px, 100%);
+        padding: 24px;
+        border: 1px solid #d7dee8;
+        border-radius: 16px;
+        background: white;
+      }
+
+      label {
+        display: block;
+        margin-top: 16px;
+        font-weight: 600;
+      }
+
+      input {
+        width: 100%;
+        margin-top: 6px;
+        padding: 10px;
+        border: 1px solid #d7dee8;
+        border-radius: 8px;
+        font: inherit;
+      }
+
+      button {
+        margin-top: 18px;
+        padding: 10px 14px;
+        border: 0;
+        border-radius: 999px;
+        background: #0a7cff;
+        color: white;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      #error {
+        margin-top: 14px;
+        color: #b42318;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Moda Tools</h1>
+      <form method="post" action="/login">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autofocus />
+        <button type="submit">Log in</button>
+        <div id="error"></div>
+      </form>
+    </main>
+  </body>
+</html>
